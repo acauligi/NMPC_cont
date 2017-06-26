@@ -27,10 +27,10 @@ Tp = 28;
 dt = 0.001;
 N_mp = 120;
 
-T_mpc = 3;
-dt_sim = 0.002;
-delta = 1;
-N_mpc = 14;
+% T_mpc = 3;
+% dt_sim = 0.002;
+% delta = 1;
+% N_mpc = 14;
 
 % Setup motion planning problem
 [MP_Prob,L_e_mp,MP_st] = setup_MP(n,m,...
@@ -58,7 +58,7 @@ save('MP_WARM_PVTOL.mat','mp_warm');
 %% Visualize
 
 visualize_PVTOL;
-
+%{
 %% Test Geodesic Numerics
 
 tic
@@ -323,3 +323,4 @@ plot([0:dt:t_end],cumtrapz([0:dt:t_end],J_nom_mpc),'b-','linewidth',2);
 %% 
 
 plot_PVTOL_movie;
+%}

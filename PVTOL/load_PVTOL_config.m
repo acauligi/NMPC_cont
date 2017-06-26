@@ -1,7 +1,7 @@
 %% Constants
 
 n = 6;
-m = 2;
+m = 3;
 
 %% Obstacle info
 
@@ -22,6 +22,7 @@ obs_loc_mpc = [[0.7;-3],...
            [-2.5;-4.5]];
 obs_rad = [1,0.9,0.8,1.2,1,0.9,0.5,1,0.6];
 obs_rad_mpc = [0.9,0.8,1.2,0.9,0.5,1];
+obs_rad = [];
 obs = struct('n_obs',length(obs_rad),'pos',obs_loc,'r',obs_rad);
 obs_mpc = struct('n_obs',length(obs_rad_mpc),'pos',obs_loc_mpc,'r',obs_rad_mpc);
 
@@ -48,29 +49,46 @@ J = 0.00383;
 g = 9.81;
 len = 0.25;
 
-f  = @(x) [x(4)*cos(x(3)) - x(5)*sin(x(3));
-           x(4)*sin(x(3)) + x(5)*cos(x(3));
-           x(6);
-           x(6)*x(5)-g*sin(x(3));
-           -x(6)*x(4)-g*cos(x(3));
-           0];
+% f  = @(x) [x(4)*cos(x(3)) - x(5)*sin(x(3));
+%            x(4)*sin(x(3)) + x(5)*cos(x(3));
+%            x(6);
+%            x(6)*x(5)-g*sin(x(3));
+%            -x(6)*x(4)-g*cos(x(3));
+%            0];
+%        
+% B = [zeros(1,4),1/mass, len/J;
+%      zeros(1,4),1/mass,-len/J]';
+% 
+% df = @(x) [0,0,-x(4)*sin(x(3))-x(5)*cos(x(3)),cos(x(3)),-sin(x(3)),0;
+%            0,0, x(4)*cos(x(3))-x(5)*sin(x(3)),sin(x(3)), cos(x(3)),0;
+%            zeros(1,5),1;
+%            0,0,-g*cos(x(3)), 0, x(6), x(5);
+%            0,0, g*sin(x(3)), -x(6), 0, -x(4);
+%            zeros(1,6)];
+% 
+% B_w = [zeros(1,3),1,0,0;
+%        zeros(1,3),0,1,0]';
+
+mass = 6.0;
+v_max = 0.5;
+F_max = 2.5;
+J = diag([5,5,10]);
+
+% x = [rx ry rz vx vy vz]
+f  = @(x) [x(4:6);
+          zeros(3,1)];
        
-B = [zeros(1,4),1/mass, len/J;
-     zeros(1,4),1/mass,-len/J]';
-
-df = @(x) [0,0,-x(4)*sin(x(3))-x(5)*cos(x(3)),cos(x(3)),-sin(x(3)),0;
-           0,0, x(4)*cos(x(3))-x(5)*sin(x(3)),sin(x(3)), cos(x(3)),0;
-           zeros(1,5),1;
-           0,0,-g*cos(x(3)), 0, x(6), x(5);
-           0,0, g*sin(x(3)), -x(6), 0, -x(4);
-           zeros(1,6)];
-
-B_w = [zeros(1,3),1,0,0;
-       zeros(1,3),0,1,0]';
+       
+df  = @(x) [zeros(3) eye(3);
+                zeros(3,6)];
+   
+B = 1/mass*[zeros(3,3); eye(3)];
+%    
+% Q = zeros(n);   R = eye(m);     P = eye(n);
    
 f_true = f;
 B_true = B;
-B_w_true = B_w;
+B_w_true = B;
 
 Q = zeros(n); R = eye(m);
    
@@ -109,12 +127,15 @@ alpha = 1e-3;
 %% Simulation constraints
 
 state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3]+euc_bound;
+state_constr_low = -10*ones(n,1);
 state_constr = [state_constr_low, -state_constr_low];
 ctrl_constr = [0.1*mass*g+ctrl_bound, 2*mass*g-ctrl_bound;
+               0.1*mass*g+ctrl_bound, 2*mass*g-ctrl_bound;
                0.1*mass*g+ctrl_bound, 2*mass*g-ctrl_bound];
+ctrl_constr = 10*[-ones(m,1) ones(m,1)];
            
 x_eq = [4.5;4.5;0;0;0;0];
-u_eq = [0.5*mass*g; 0.5*mass*g]; 
+u_eq = [0.5*mass*g; 0.5*mass*g; 0.5*mass*g]; 
 
 test_state = [-4.4;
               -5;
