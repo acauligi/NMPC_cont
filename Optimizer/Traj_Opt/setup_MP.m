@@ -1,6 +1,6 @@
 function [MP_Prob,L_e_full,s_t] = ...
     setup_MP(n,m,...
-               f,B,df,state_con,u_con,...
+               f,B,df,B_Jacob,state_con,u_con,...
                N,Tp,dt,...
                P,alpha,RPI_bound,...
                x_eq,obs,J,Q,R,Name)
@@ -65,7 +65,7 @@ Q_tilde = Q_bar + kron(diag([zeros(N,1);(2/Tp)]),P);
 F = blkdiag(Q_tilde,R_bar);
 % F_pattern = sparse(F~=0);
     
-B_full = kron(eye(N+1),B);
+%B_full = kron(eye(N+1),B);
 
 xu_L = [kron(ones(N+1,1),x_L);
         kron(ones(N+1,1),u_L)];
@@ -101,7 +101,9 @@ MP_Prob.user.m = m;
 MP_Prob.user.N = N;
 MP_Prob.user.f = f;
 MP_Prob.user.df = df;
-MP_Prob.user.B_full = B_full;
+%MP_Prob.user.B_full = B_full;
+MP_Prob.user.B = B;
+MP_Prob.user.B_Jacob = B_Jacob;
 MP_Prob.user.Tp = Tp;
 MP_Prob.user.P = P;
 MP_Prob.user.x_eq = x_eq;

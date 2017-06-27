@@ -17,7 +17,8 @@ conJ = zeros(n*(N+1)+2+no*(N+1),(n+m)*(N+1));
 conJ(1:n*(N+1),1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D - ...
             df_all(Prob.user.df,xu(1:n*(N+1)),J,n,N);
 
-conJ(1:n*(N+1),n*(N+1)+1:end) = -Prob.user.B_full;
+%conJ(1:n*(N+1),n*(N+1)+1:end) = -Prob.user.B_full;
+conJ(1:n*(N+1), n*(N+1)+1:end) = -B_dyn_J(Prob.user.B_Jacob,xu(1:n*(N+1)),xu(n*(N+1)+1:end),J,m,n,N);
 
 %% Initial RPI constraint
 

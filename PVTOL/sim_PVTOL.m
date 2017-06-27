@@ -18,7 +18,7 @@ global geodesic_MPC;
     
 geo_solver = 'npsol';    
     
-geo_warm = struct('sol',0,'result',[]);    cd
+geo_warm = struct('sol',0,'result',[]);
 
 %% Setup MP numerics
 
@@ -34,13 +34,13 @@ N_mp = 120;
 
 % Setup motion planning problem
 [MP_Prob,L_e_mp,MP_st] = setup_MP(n,m,...
-    f,B,df, state_constr ,ctrl_constr,...
+    f,B,df,B_Jacobian,state_constr ,ctrl_constr,...
     N_mp,Tp,dt,...
     P,alpha,(0.98*d_bar)^2,...
     x_eq,obs,J,Q,R,'MP');
 
 load MP_WARM_PVTOL.mat;
-%mp_warm = struct('Tp',Tp,'shift',0,'sol',0,...
+% mp_warm = struct('Tp',Tp,'shift',0,'sol',0,...
 %                   's_t',MP_st,'state',[],'ctrl',[],'result',[]);
 
 %% Test MP Solve
@@ -58,6 +58,7 @@ save('MP_WARM_PVTOL.mat','mp_warm');
 %% Visualize
 
 visualize_PVTOL;
+%visualize_mrp;
 %{
 %% Test Geodesic Numerics
 
