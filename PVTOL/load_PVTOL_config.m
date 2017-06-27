@@ -43,37 +43,37 @@ ctrl_bound = 6.00;
 n_W = [3,4];
 
 %% x = [x y th xd yd thd]'
-n = 6; m = 3;
-J = 0.00383;    g = 9.81;   
+% n = 6; m = 3;
+% J = 0.00383;    g = 9.81;   
 len = 0.25;
-f  = @(x) [x(4)*cos(x(3)) - x(5)*sin(x(3));
-           x(4)*sin(x(3)) + x(5)*cos(x(3));
-           x(6);
-           x(6)*x(5)-g*sin(x(3));
-           -x(6)*x(4)-g*cos(x(3));
-           0];
-       
-B = [zeros(1,4),1/mass, len/J;
-     zeros(1,4),1/mass,-len/J]';
-
-df = @(x) [0,0,-x(4)*sin(x(3))-x(5)*cos(x(3)),cos(x(3)),-sin(x(3)),0;
-           0,0, x(4)*cos(x(3))-x(5)*sin(x(3)),sin(x(3)), cos(x(3)),0;
-           zeros(1,5),1;
-           0,0,-g*cos(x(3)), 0, x(6), x(5);
-           0,0, g*sin(x(3)), -x(6), 0, -x(4);
-           zeros(1,6)];
-
-B_w = [zeros(1,3),1,0,0;
-       zeros(1,3),0,1,0]';
-   
-state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3];%+euc_bound;
-state_constr = [state_constr_low, -state_constr_low];
-ctrl_constr = 10*[-ones(m,1) ones(m,1)];
-           
-x_eq = [4.5;4.5;0;0;0;0];
-u_eq = [0.5*mass*g; 0.5*mass*g; 0.5*mass*g]; 
-
-test_state = [-4.4;-5;0;1.3;0;0];
+% f  = @(x) [x(4)*cos(x(3)) - x(5)*sin(x(3));
+%            x(4)*sin(x(3)) + x(5)*cos(x(3));
+%            x(6);
+%            x(6)*x(5)-g*sin(x(3));
+%            -x(6)*x(4)-g*cos(x(3));
+%            0];
+%        
+% B = [zeros(1,4),1/mass, len/J;
+%      zeros(1,4),1/mass,-len/J]';
+% 
+% df = @(x) [0,0,-x(4)*sin(x(3))-x(5)*cos(x(3)),cos(x(3)),-sin(x(3)),0;
+%            0,0, x(4)*cos(x(3))-x(5)*sin(x(3)),sin(x(3)), cos(x(3)),0;
+%            zeros(1,5),1;
+%            0,0,-g*cos(x(3)), 0, x(6), x(5);
+%            0,0, g*sin(x(3)), -x(6), 0, -x(4);
+%            zeros(1,6)];
+% 
+% B_w = [zeros(1,3),1,0,0;
+%        zeros(1,3),0,1,0]';
+%    
+% state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3];%+euc_bound;
+% state_constr = [state_constr_low, -state_constr_low];
+% ctrl_constr = 10*[-ones(m,1) ones(m,1)];
+%            
+% x_eq = [4.5;4.5;0;0;0;0];
+% u_eq = [0.5*mass*g; 0.5*mass*g; 0.5*mass*g]; 
+% 
+% test_state = [-4.4;-5;0;1.3;0;0];
 
 %% x = [rx ry rz vx vy vz]
 n = 6;  m = 3;
@@ -87,6 +87,7 @@ df  = @(x,J) [zeros(3) eye(3);
    
 %B = @(u) 1/mass*[zeros(3,3); eye(3)]*u;
 B = @(x,u,J) [zeros(3,1); u(1);u(2);u(3)];
+B_Jacobian = @(x,u,J) [zeros(3,m+n); zeros(3,n) eye(m)];
 B_Jacobian = @(x,u,J) [zeros(3,3); eye(3)];
 
 state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3];
@@ -97,6 +98,7 @@ x_eq = [4.5;4.5;0;0;0;0];
 u_eq = zeros(m,1);
 
 test_state = [-4.4;-5;0;1.3;0;0];
+filename = 'double_integrator_mat.mat';
 
 %% x = [p1 p2 p3 wx wy wz]'     u = [Tx Ty Tz]'
 % J = diag([5,5,10]);
@@ -124,6 +126,7 @@ test_state = [-4.4;-5;0;1.3;0;0];
 % u_eq = zeros(m,1);
 % 
 % test_state = [quat2mrp([-0.5  0.5 0.5 -0.5])'; 0.05*ones(3,1)];
+filename = 'mrp_T_input_mat.mat';
 
 %% x = [p1 p2 p3]'    u = [wx wy wz]'
 % n = 3;  m = 3;
@@ -149,6 +152,8 @@ test_state = [-4.4;-5;0;1.3;0;0];
 % u_eq = zeros(m,1);
 % 
 % test_state = quat2mrp([-0.5  0.5 0.5 -0.5])';
+% filename = 'mrp_w_input_mat.mat';
+
 %% Dynamics and cost
 f_true = f;
 B_true = B;

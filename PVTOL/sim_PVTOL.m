@@ -39,7 +39,7 @@ N_mp = 120;
     P,alpha,(0.98*d_bar)^2,...
     x_eq,obs,J,Q,R,'MP');
 
-load MP_WARM_PVTOL.mat;
+load(filename);
 % mp_warm = struct('Tp',Tp,'shift',0,'sol',0,...
 %                   's_t',MP_st,'state',[],'ctrl',[],'result',[]);
 
@@ -53,7 +53,7 @@ toc
 disp('MP:'); disp(converged_MP);
 
 mp_warm.sol = 1;
-save('MP_WARM_PVTOL.mat','mp_warm');
+%save(filename,'mp_warm');
 
 %% Visualize
 
