@@ -3,7 +3,7 @@ function [MP_Prob,L_e_full,s_t] = ...
                f,B,df,state_con,u_con,...
                N,Tp,dt,...
                P,alpha,RPI_bound,...
-               x_eq,obs,Q,R,Name)
+               x_eq,obs,J,Q,R,Name)
 
 %% Constants
 
@@ -106,5 +106,6 @@ MP_Prob.user.Tp = Tp;
 MP_Prob.user.P = P;
 MP_Prob.user.x_eq = x_eq;
 MP_Prob.user.obs = obs;
+MP_Prob.user.J = J;
 
 end

@@ -3,6 +3,7 @@ function c = MP_con(xu,Prob)
 
 n = Prob.user.n;
 N = Prob.user.N;
+J = Prob.user.J;
 
 no = Prob.user.obs.n_obs;
 
@@ -14,7 +15,7 @@ c = zeros(n*(N+1)+2+no*(N+1),1);
 %% Dynamics constraints
 
 c(1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D*xu(1:n*(N+1)) -...
-    (NMPC_dyn(Prob.user.f,xu(1:n*(N+1)),n,N) + Prob.user.B_full*xu(n*(N+1)+1:end));
+    (NMPC_dyn(Prob.user.f,xu(1:n*(N+1)),J,n,N) + Prob.user.B_full*xu(n*(N+1)+1:end));
 
 %% Initial RPI constraint
 
