@@ -1,6 +1,7 @@
 %% Constants mass = 0.486;
 mass = 6.0;
 w_max = 0.5;
+F_max = 2.5;
 T_max = 2.5;
 
 %% Obstacle info
@@ -42,7 +43,9 @@ ctrl_bound = 6.00;
 n_W = [3,4];
 
 %% x = [x y th xd yd thd]'
-J = 0.00383;    g = 9.81;   len = 0.25;
+n = 6; m = 3;
+J = 0.00383;    g = 9.81;   
+len = 0.25;
 f  = @(x) [x(4)*cos(x(3)) - x(5)*sin(x(3));
            x(4)*sin(x(3)) + x(5)*cos(x(3));
            x(6);
@@ -62,9 +65,19 @@ df = @(x) [0,0,-x(4)*sin(x(3))-x(5)*cos(x(3)),cos(x(3)),-sin(x(3)),0;
 
 B_w = [zeros(1,3),1,0,0;
        zeros(1,3),0,1,0]';
+   
+state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3];%+euc_bound;
+state_constr = [state_constr_low, -state_constr_low];
+ctrl_constr = 10*[-ones(m,1) ones(m,1)];
+           
+x_eq = [4.5;4.5;0;0;0;0];
+u_eq = [0.5*mass*g; 0.5*mass*g; 0.5*mass*g]; 
+
+test_state = [-4.4;-5;0;1.3;0;0];
 
 %% x = [rx ry rz vx vy vz]
 n = 6;  m = 3;
+J = diag([5,5,10]);
 
 f  = @(x,J) [x(4:6);
           zeros(3,1)];
@@ -75,6 +88,15 @@ df  = @(x,J) [zeros(3) eye(3);
 %B = @(u) 1/mass*[zeros(3,3); eye(3)]*u;
 B = @(x,u,J) [zeros(3,1); u(1);u(2);u(3)];
 B_Jacobian = @(x,u,J) [zeros(3,3); eye(3)];
+
+state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3];
+state_constr = [state_constr_low, -state_constr_low];
+ctrl_constr = F_max*[-ones(m,1) ones(m,1)];
+           
+x_eq = [4.5;4.5;0;0;0;0];
+u_eq = zeros(m,1);
+
+test_state = [-4.4;-5;0;1.3;0;0];
 
 %% x = [p1 p2 p3 wx wy wz]'     u = [Tx Ty Tz]'
 % J = diag([5,5,10]);
@@ -94,9 +116,18 @@ B_Jacobian = @(x,u,J) [zeros(3,3); eye(3)];
 %            0,0,0,0, (J(2,2) - J(3,3))*x(6)/J(1,1), (J(2,2) - J(3,3))*x(5)/J(1,1);
 %            0,0,0, (J(3,3) - J(1,1))*x(6)/J(2,2), 0, (J(3,3) - J(1,1))*x(4)/J(2,2);
 %            0,0,0, (J(1,1) - J(2,2))*x(5)/J(3,3), (J(1,1) - J(2,2))*x(4)/J(3,3), 0];
+% state_constr_low = [-1*ones(3,1); -w_max*ones(3,1)];
+% state_constr = [state_constr_low, -state_constr_low];
+% ctrl_constr = 10*[-ones(m,1) ones(m,1)];
+%            
+% x_eq = zeros(n,1);
+% u_eq = zeros(m,1);
+% 
+% test_state = [quat2mrp([-0.5  0.5 0.5 -0.5])'; 0.05*ones(3,1)];
 
 %% x = [p1 p2 p3]'    u = [wx wy wz]'
 % n = 3;  m = 3;
+% J = diag([5,5,10]);
 % 
 % f  = @(x) zeros(3,1);
 % df  = @(x) zeros(3,3);
@@ -108,7 +139,16 @@ B_Jacobian = @(x,u,J) [zeros(3,3); eye(3)];
 % B_Jacobian = @(x,u,J) [0.25*(x(1)^2-x(2)^2-x(3)^2+1), 0.5*(x(1)*x(2)-x(3)), 0.5*(x(2)-x(1)*x(3));...
 %             0.5*(x(1)*x(2)+x(3)), 0.25*(x(2)^2 - x(1)^2-x(3)^2), 0.5*(x(2)*x(3)-x(1));...
 %             0.5*(x(1)*x(3)-x(2)), 0.5*(x(1)+x(2)*x(3)), 0.25*(x(3)^2-x(2)^2-x(1)^2+1)];
-
+% 
+% th_max = 358*pi/180;    th_tange = tan(th_max/4);
+% state_constr_low = -th_tange*ones(n,1);
+% state_constr = [state_constr_low, -state_constr_low];
+% ctrl_constr = w_max*[-ones(m,1) ones(m,1)];
+%            
+% x_eq = zeros(n,1);
+% u_eq = zeros(m,1);
+% 
+% test_state = quat2mrp([-0.5  0.5 0.5 -0.5])';
 %% Dynamics and cost
 f_true = f;
 B_true = B;
@@ -147,24 +187,3 @@ obs_mpc.M_obs = M_obs_mpc;
 
 P = 2.5*eye(n);
 alpha = 1e-3;
-
-%% Simulation constraints
-
-state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3]+euc_bound;
-%state_constr_low = [-1*ones(3,1); -w_max*ones(3,1)];
-state_constr = [state_constr_low, -state_constr_low];
-ctrl_constr = 10*[-ones(m,1) ones(m,1)];
-           
-x_eq = [4.5;4.5;0;0;0;0];
-%x_eq = zeros(n,1);
-u_eq = [0.5*mass*g; 0.5*mass*g; 0.5*mass*g]; 
-u_eq = zeros(m,1);
-
-test_state = [-4.4;
-              -5;
-               0;
-               1.3;
-               0;
-               0];
-
-%test_state = [quat2mrp([-0.5  0.5 0.5 -0.5])'; 0.05*ones(3,1)];
