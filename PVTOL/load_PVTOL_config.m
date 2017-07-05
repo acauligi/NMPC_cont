@@ -87,8 +87,8 @@ df  = @(x,J) [zeros(3) eye(3);
    
 %B = @(u) 1/mass*[zeros(3,3); eye(3)]*u;
 B = @(x,u,J) [zeros(3,1); u(1);u(2);u(3)];
-B_Jacobian = @(x,u,J) [zeros(3,m+n); zeros(3,n) eye(m)];
 B_Jacobian = @(x,u,J) [zeros(3,3); eye(3)];
+%B_Jacobian = @(x,u,J) [zeros(3,m+n); zeros(3,n) eye(m)];
 
 state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3];
 state_constr = [state_constr_low, -state_constr_low];
@@ -99,6 +99,32 @@ u_eq = zeros(m,1);
 
 test_state = [-4.4;-5;0;1.3;0;0];
 filename = 'double_integrator_mat.mat';
+
+%% x = [rx ry rz vx vy vz r]
+% n = 7;  m = 3;
+% J = diag([5,5,10]);
+% 
+% f  = @(x,J) [x(7)*x(4); x(7)*x(5); x(7)*x(6);...
+%           zeros(4,1)];
+%        
+% df  = @(x,J) [zeros(3) x(7)*eye(3) x(4:6);
+%                 zeros(3,7)];
+%    
+% %B = @(u) 1/mass*[zeros(3,3); eye(3)]*u;
+% B = @(x,u,J) [zeros(3,1); u(1);u(2);u(3); 0];
+% B_Jacobian = @(x,u,J) [zeros(3,3); eye(3); zeros(1,3)];
+% B_Jacobian = @(x,u,J) [zeros(3,n+m); zeros(3,n) eye(m) zeros(3,1); zeros(1,n+m)];
+% 
+% state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3;0];
+% state_constr_hi = [5.5;5.5;pi/4;2;1;pi/3;30];
+% state_constr = [state_constr_low, state_constr_hi];
+% ctrl_constr = F_max*[-ones(m,1) ones(m,1)];
+%            
+% x_eq = [4.5;4.5;0;0;0;0;0];
+% u_eq = zeros(m,1);
+% 
+% test_state = [-4.4;-5;0;1.3;0;0;4];
+% filename = 'double_integrator_fft_mat.mat';
 
 %% x = [p1 p2 p3 wx wy wz]'     u = [Tx Ty Tz]'
 % J = diag([5,5,10]);

@@ -5,10 +5,10 @@ hold on
 test_vector = [1;0;0];
 
 %Full MP traj
-plot(MP_state(:,1),MP_state(:,2),'b-','linewidth',1);
-quiver(MP_state(1:(0.5/dt):end-1,1),MP_state(1:(0.5/dt):end-1,2),...
-       (MP_ctrl(1:(0.5/dt):end-1,1)+MP_ctrl(1:(0.5/dt):end-1,2)).*sin(MP_state(1:(0.5/dt):end-1,3)),...
-       (MP_ctrl(1:(0.5/dt):end-1,1)+MP_ctrl(1:(0.5/dt):end-1,2)).*cos(MP_state(1:(0.5/dt):end-1,3)));
+% plot(MP_state(:,1),MP_state(:,2),'b-','linewidth',1);
+% quiver(MP_state(1:(0.5/dt):end-1,1),MP_state(1:(0.5/dt):end-1,2),...
+%        (MP_ctrl(1:(0.5/dt):end-1,1)+MP_ctrl(1:(0.5/dt):end-1,2)).*sin(MP_state(1:(0.5/dt):end-1,3)),...
+%        (MP_ctrl(1:(0.5/dt):end-1,1)+MP_ctrl(1:(0.5/dt):end-1,2)).*cos(MP_state(1:(0.5/dt):end-1,3)));
 
 N = 100;
 [X,Y,Z] = sphere(N);
