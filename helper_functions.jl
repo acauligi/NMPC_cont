@@ -116,13 +116,23 @@ end
 
 
 
-function df_all(state, N_collocation, A, B, n, m)
+function df_all(dyn_func, state, N, n, m)
   out = [];
-  for i in 1:N_collocation+1
+  for i in 1:N+1
     x = state[n*(i-1)+1:n*i];
     u = state[n*(N+1)+m*(i-1)+1:n*(N+1)+m*i];
 
-    out = [out; A*x + B*u]
+    out = [out; dyn_func(x,u)]
   end
   return out
+end
+ 
+
+
+  
+function skew(v)
+  # generates 3x3 skew symmetric matrix for vector
+  S = [0 -v[3] v[2];  v[3] 0 -v[1];   -v[2] v[1] 0];
+
+  return S
 end
