@@ -17,15 +17,17 @@ c = zeros(n*(N+1)+2+no*(N+1),1);
 
 c(1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D*xu(1:n*(N+1)) -...
     (NMPC_dyn(Prob.user.f,xu(1:n*(N+1)),J,n,N) + B_dyn(Prob.user.B,xu(1:n*(N+1)), xu(n*(N+1)+1:end),J,m,n,N));
+    %(NMPC_dyn(Prob.user.f,xu(1:n*(N+1)),J,n,N) + Prob.user.B_full*xu(n*(N+1)+1:end));
 
 %% Initial RPI constraint
 
-[~, X_dot,J_opt,~,geo_result,~] = compute_geodesic_tom(geodesic_MPC.geo_Prob,...
-    n,geodesic_MPC.geodesic_N,xu(1:n),Prob.user.x_act,geodesic_MPC.T_e,geodesic_MPC.T_dot_e,geodesic_MPC.geo_Aeq,geodesic_MPC.warm,geodesic_MPC.solver);
-US_A = X_dot(:,1);
-geodesic_MPC.warm.sol = 1; geodesic_MPC.warm.result = geo_result;
-
-c(n*(N+1)+1) = J_opt;
+% [~, X_dot,J_opt,~,geo_result,~] = compute_geodesic_tom(geodesic_MPC.geo_Prob,...
+%     n,geodesic_MPC.geodesic_N,xu(1:n),Prob.user.x_act,geodesic_MPC.T_e,geodesic_MPC.T_dot_e,geodesic_MPC.geo_Aeq,geodesic_MPC.warm,geodesic_MPC.solver);
+% US_A = X_dot(:,1);
+% geodesic_MPC.warm.sol = 1; geodesic_MPC.warm.result = geo_result;
+% 
+% c(n*(N+1)+1) = J_opt;
+c(n*(N+1)+1) = (xu(1:n)-Prob.user.x_act)'*Prob.user.P*(xu(1:n)-Prob.user.x_act);
 
 %% Terminal constraint
 c(n*(N+1)+2) = (xu(n*N+1:n*(N+1))-Prob.user.x_eq)'*Prob.user.P*(xu(n*N+1:n*(N+1))-Prob.user.x_eq);

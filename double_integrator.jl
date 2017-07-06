@@ -2,7 +2,7 @@ using JuMP, Ipopt, PyPlot
 
 include("helper_functions.jl");
 
-mod = Model(solver=IpoptSolver(print_level=0));
+mod = Model(solver=IpoptSolver(warm_start_init_point="yes",  warm_start_bound_push=1e-6, warm_start_mult_bound_push=1e-6, mu_init=1e-6));
 
 function dyn(x,u)
   A = [zeros(3,3) eye(3); zeros(3,6)];
@@ -59,20 +59,46 @@ D = kron(ChebyshevDiffMatrix(N,s), eye(n));
 @variable(mod, Xmin[i] <= state[i=1:(n+m)*(N+1)] <= Xmax[i]);
 
 # LQR cost
-#Q_bar = sparse(kron(diagm([w[i] for i in 1:length(w)]), Q));
-#R_bar = sparse(kron(diagm([w[i] for i in 1:length(w)]), R));
-#Q_tilde = blkdiag(Q_bar, R_bar);
-#lqr_cost = state'*Q_tilde*state;
+Q_bar = sparse(kron(diagm([w[i] for i in 1:length(w)]), Q));
+R_bar = sparse(kron(diagm([w[i] for i in 1:length(w)]), R));
+Q_tilde = blkdiag(Q_bar, R_bar);
+#lqr_cost(x) = (x'*Q_tilde*x)[1];
+#lqr_cost_prime(x) = Q_tilde*x;
+#lqr_cost_prime_prime(x) = Q_tilde;
 
-lqr_cost = 0;
-for i = 1:N+1
-  x = state[n*(i-1)+1:n*i];
-  u = state[n*(N+1)+m*(i-1)+1:n*(N+1)+m*i];
-  lqr_cost += ((x-xf)'*diagm(w[i]*ones(n))*Q*(x-xf) + (u-u_eq)'*diagm(w[i]*ones(m))*R*(u-u_eq));
+#lqr_cost = 0;
+function lqr_cost(state)
+  #cost = 0;
+  #for i = 1:N+1
+  #  x = state[n*(i-1)+1:n*i];
+  #  u = state[n*(N+1)+m*(i-1)+1:n*(N+1)+m*i];
+  #  cost += ((x-xf)'*diagm(w[i]*ones(n))*Q*(x-xf) + (u-u_eq)'*diagm(w[i]*ones(m))*R*(u-u_eq));
+  #end
+  cost = state'*Q_tilde*state;
+  return cost[1]
 end
 
+function lqr_cost_prime(g,state)
+  #for i = 1:N+1
+  #  x = state[n*(i-1)+1:n*i];
+  #  u = state[n*(N+1)+m*(i-1)+1:n*(N+1)+m*i];
+  #  
+  #  g[n*(i-1)+1:n*i] = diagm(w[i]*ones(n))*Q*(x-xf);
+  #  g[n*(N+1)+m*(i-1)+1:n*(N+1)+m*i] = diagm(w[i]*ones(m))*R*(u-u_eq);
+  #end
+  g = Q_tilde*state;
+end
+
+function lqr_cost_prime_prime(H,state)
+  return Q_tilde
+end
+
+JuMP.register(mod, :lqr_cost, 1, lqr_cost, lqr_cost_prime, lqr_cost_prime_prime);
+#JuMP.register(mod, :lqr_cost, 1, lqr_cost, autodiff=true);
+
 # Objective: minimize quadratic LQR cost of trajectory
-@objective(mod, Min, lqr_cost[1]);
+#@objective(mod, Min, lqr_cost[1]);
+@objective(mod, Min, lqr_cost(state));
 
 # BC constraints 
 @constraints(mod, begin
@@ -84,7 +110,7 @@ end)
 @constraint(mod, df_all(dyn, state, N, n, m) - 2/Tp*D*state[1:n*(N+1)] .== zeros(n*(N+1)))
 
 # Solve problem
-status = solve(mod);
+@time status = solve(mod);
 println("Solver status: ", status)
 
 # Unpack solution

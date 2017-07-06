@@ -8,17 +8,17 @@ load_PVTOL_config;
 %% Setup Geodesic numerics
 
 %PVTOL
-geodesic_N = 2;
-
-setup_geodesic_MPC(n,geodesic_N,W_fnc,dW_fnc,n_W); %initializes geodesic_MPC struct
-global geodesic_MPC;
-
-[geo_Prob,geo_Ke,T_e,T_dot_e,geo_Aeq] = ...
-        setup_geodesic_calc(n,geodesic_N,W_fnc,dW_fnc,n_W);
-    
-geo_solver = 'npsol';    
-    
-geo_warm = struct('sol',0,'result',[]);
+% geodesic_N = 2;
+% 
+% setup_geodesic_MPC(n,geodesic_N,W_fnc,dW_fnc,n_W); %initializes geodesic_MPC struct
+% global geodesic_MPC;
+% 
+% [geo_Prob,geo_Ke,T_e,T_dot_e,geo_Aeq] = ...
+%         setup_geodesic_calc(n,geodesic_N,W_fnc,dW_fnc,n_W);
+%     
+% geo_solver = 'npsol';    
+%     
+% geo_warm = struct('sol',0,'result',[]);
 
 %% Setup MP numerics
 

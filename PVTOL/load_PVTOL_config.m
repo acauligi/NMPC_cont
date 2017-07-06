@@ -28,19 +28,19 @@ obs = struct('n_obs',length(obs_rad),'pos',obs_loc,'r',obs_rad);
 obs_mpc = struct('n_obs',length(obs_rad_mpc),'pos',obs_loc_mpc,'r',obs_rad_mpc);
 
 %% Setup Metric
-load 'metric_PVTOL_vectorized.mat';
-
-% W_fnc = @(x) W_mat(x);
-% dW_fnc = @(x) {dW_p_mat(x),dW_vy_mat(x)};
-
-W_fnc = struct('W_eval',W_eval,'w_poly_fnc',w_poly_fnc);
-dW_fnc = @(x) {dw_poly_p_fnc(x), dw_poly_vy_fnc(x)};
-
-% sigma_ThBw = 0.3296;
-sigma_ThBw = 0.3185;
-lambda =  0.8283;
-ctrl_bound = 6.00;
-n_W = [3,4];
+% load 'metric_PVTOL_vectorized.mat';
+% 
+% % W_fnc = @(x) W_mat(x);
+% % dW_fnc = @(x) {dW_p_mat(x),dW_vy_mat(x)};
+% 
+% W_fnc = struct('W_eval',W_eval,'w_poly_fnc',w_poly_fnc);
+% dW_fnc = @(x) {dw_poly_p_fnc(x), dw_poly_vy_fnc(x)};
+% 
+% % sigma_ThBw = 0.3296;
+% sigma_ThBw = 0.3185;
+% lambda =  0.8283;
+% ctrl_bound = 6.00;
+% n_W = [3,4];
 
 %% x = [x y th xd yd thd]'
 % n = 6; m = 3;
@@ -152,7 +152,7 @@ filename = 'double_integrator_mat.mat';
 % u_eq = zeros(m,1);
 % 
 % test_state = [quat2mrp([-0.5  0.5 0.5 -0.5])'; 0.05*ones(3,1)];
-filename = 'mrp_T_input_mat.mat';
+% filename = 'mrp_T_input_mat.mat';
 
 %% x = [p1 p2 p3]'    u = [wx wy wz]'
 % n = 3;  m = 3;
@@ -191,30 +191,31 @@ Q = zeros(n); R = eye(m);
 
 w_max = 0.1;
 
-M_ccm = W_upper\eye(n);
-d_bar = (w_max*sigma_ThBw/lambda);
-ctrl_bound = ctrl_bound*w_max;
-euc_bound = d_bar*sqrt(diag(W_upper));
-
-In = eye(n);
-M_ccm_pos_unscaled = ((In(1:2,:)*W_upper*In(1:2,:)')\eye(2));
-M_ccm_pos = (1/d_bar^2)*((In(1:2,:)*W_upper*In(1:2,:)')\eye(2));
-[U_pos,S_pos,V_pos] = svd(M_ccm_pos);
-    
-%Rescale ellipsoids by obstacle + robot radius
-M_obs = zeros(2,2,obs.n_obs);
-for i = 1:obs.n_obs
-    S_new = (sqrt(S_pos\eye(2)) + (obs_rad(i)+len)*eye(2))^2\eye(2);
-    M_obs(:,:,i) = U_pos*S_new*V_pos';
-end
-obs.M_obs = M_obs;
-
-M_obs_mpc = zeros(2,2,obs_mpc.n_obs);
-for i = 1:obs_mpc.n_obs
-    S_new = (sqrt(S_pos\eye(2)) + (obs_mpc.r(i)+len)*eye(2))^2\eye(2);
-    M_obs_mpc(:,:,i) = U_pos*S_new*V_pos';
-end
-obs_mpc.M_obs = M_obs_mpc;
+% M_ccm = W_upper\eye(n);
+% d_bar = (w_max*sigma_ThBw/lambda);
+d_bar = 0.0385;
+% ctrl_bound = ctrl_bound*w_max;
+% euc_bound = d_bar*sqrt(diag(W_upper));
+% 
+% In = eye(n);
+% M_ccm_pos_unscaled = ((In(1:2,:)*W_upper*In(1:2,:)')\eye(2));
+% M_ccm_pos = (1/d_bar^2)*((In(1:2,:)*W_upper*In(1:2,:)')\eye(2));
+% [U_pos,S_pos,V_pos] = svd(M_ccm_pos);
+%     
+% %Rescale ellipsoids by obstacle + robot radius
+% M_obs = zeros(2,2,obs.n_obs);
+% for i = 1:obs.n_obs
+%     S_new = (sqrt(S_pos\eye(2)) + (obs_rad(i)+len)*eye(2))^2\eye(2);
+%     M_obs(:,:,i) = U_pos*S_new*V_pos';
+% end
+% obs.M_obs = M_obs;
+% 
+% M_obs_mpc = zeros(2,2,obs_mpc.n_obs);
+% for i = 1:obs_mpc.n_obs
+%     S_new = (sqrt(S_pos\eye(2)) + (obs_mpc.r(i)+len)*eye(2))^2\eye(2);
+%     M_obs_mpc(:,:,i) = U_pos*S_new*V_pos';
+% end
+% obs_mpc.M_obs = M_obs_mpc;
 
 P = 2.5*eye(n);
 alpha = 1e-3;

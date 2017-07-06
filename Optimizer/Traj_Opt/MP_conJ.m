@@ -19,14 +19,16 @@ conJ(1:n*(N+1),1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D - ...
 
 %conJ(1:n*(N+1), :) = -B_dyn_J(Prob.user.B_Jacob,xu(1:n*(N+1)),xu(n*(N+1)+1:end),J,m,n,N);
 conJ(1:n*(N+1), n*(N+1)+1:end) = -B_dyn_J(Prob.user.B_Jacob,xu(1:n*(N+1)),xu(n*(N+1)+1:end),J,m,n,N);
+%conJ(1:n*(N+1),n*(N+1)+1:end) = -Prob.user.B_full;
 
 %% Initial RPI constraint
 
 % conJ(end-1,1:n) = NaN;
 
-w_poly = geodesic_MPC.W.w_poly_fnc(xu(1:n));
-M = (geodesic_MPC.W.W_eval(w_poly))\eye(n);
-conJ(n*(N+1)+1,1:n) = -2*US_A'*M;
+% w_poly = geodesic_MPC.W.w_poly_fnc(xu(1:n));
+% M = (geodesic_MPC.W.W_eval(w_poly))\eye(n);
+% conJ(n*(N+1)+1,1:n) = -2*US_A'*M;
+conJ(n*(N+1)+1,1:n) = 2*(Prob.user.P*(xu(1:n)-Prob.user.x_act))';
 
 
 %% Terminal constraint

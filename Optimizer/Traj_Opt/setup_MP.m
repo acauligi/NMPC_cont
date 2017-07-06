@@ -79,7 +79,7 @@ MPC_hess = @(xu) Tp*F;
 % MP_con_fnc = @(xu,Prob) MP_con(xu,Prob,n,geo_MPC.geo_Prob,N,P,D,f,B_full,Tp,obs);
 
 c_L = [zeros(n*(N+1)+2,1); ones(obs.n_obs*(N+1),1)];
-c_U = [zeros(n*(N+1),1);RPI_bound;alpha;Inf*ones(obs.n_obs*(N+1),1)];
+c_U = [zeros(n*(N+1),1);alpha;alpha;Inf*ones(obs.n_obs*(N+1),1)];
 
 xu0 = zeros((n+m)*(N+1),1);
 
