@@ -136,3 +136,13 @@ function skew(v)
 
   return S
 end
+
+
+
+
+function mrp_derivative(p, w)
+  # Eq. 338 in Shuster
+  p_dot = 0.25*((1-norm(p)^2)*w - 2*skew(w)*p + 2*dot(w,p)*p);
+
+  return p_dot
+end

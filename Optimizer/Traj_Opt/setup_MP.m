@@ -3,7 +3,7 @@ function [MP_Prob,L_e_full,s_t] = ...
                f,B,df,B_Jacob,state_con,u_con,...
                N,Tp,dt,...
                P,alpha,RPI_bound,...
-               x_eq,obs,J,Q,R,Name)
+               x_eq,u_eq,obs,J,Q,R,Name)
 
 %% Constants
 
@@ -54,8 +54,8 @@ D = kron(D,eye(n));
 
 % u_eq = zeros(m,1);
 
-x_eq_all = kron(ones(N+1,1),zeros(n,1));
-u_eq_all = kron(ones(N+1,1),zeros(m,1));
+x_eq_all = kron(ones(N+1,1),x_eq);
+u_eq_all = kron(ones(N+1,1),u_eq);
 
 xu_eq = [x_eq_all;u_eq_all];
 

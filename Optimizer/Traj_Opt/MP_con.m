@@ -14,10 +14,11 @@ global geodesic_MPC;
 c = zeros(n*(N+1)+2+no*(N+1),1);
 
 %% Dynamics constraints
-
+X = xu(1:n*(N+1));
+U = xu(n*(N+1)+1:end);
 c(1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D*xu(1:n*(N+1)) -...
-    (NMPC_dyn(Prob.user.f,xu(1:n*(N+1)),J,n,N) + B_dyn(Prob.user.B,xu(1:n*(N+1)), xu(n*(N+1)+1:end),J,m,n,N));
-    %(NMPC_dyn(Prob.user.f,xu(1:n*(N+1)),J,n,N) + Prob.user.B_full*xu(n*(N+1)+1:end));
+    f_all(Prob.user.f,X,U,J,n,m,N);% + B_dyn(Prob.user.B,xu(1:n*(N+1)), xu(n*(N+1)+1:end),J,m,n,N));
+    %(f_all(Prob.user.f,xu(1:n*(N+1)),J,n,N) + Prob.user.B_full*xu(n*(N+1)+1:end));
 
 %% Initial RPI constraint
 

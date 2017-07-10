@@ -88,7 +88,12 @@ df  = @(x,J) [zeros(3) eye(3);
 %B = @(u) 1/mass*[zeros(3,3); eye(3)]*u;
 B = @(x,u,J) [zeros(3,1); u(1);u(2);u(3)];
 B_Jacobian = @(x,u,J) [zeros(3,3); eye(3)];
-%B_Jacobian = @(x,u,J) [zeros(3,m+n); zeros(3,n) eye(m)];
+B_Jacobian = @(x,u,J) [zeros(3,m+n); zeros(3,n) eye(m)];
+
+f = @(x,u,J) [x(4:6);...
+            u(1:3)];
+df = @(x,u,J) [zeros(3,3) eye(3) zeros(3,3);...
+                zeros(3,6) eye(3)];
 
 state_constr_low = -[5.5;5.5;pi/4;2;1;pi/3];
 state_constr = [state_constr_low, -state_constr_low];

@@ -14,11 +14,17 @@ conJ = zeros(n*(N+1)+2+no*(N+1),(n+m)*(N+1));
 
 %% Dynamics constraints
 
-conJ(1:n*(N+1),1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D - ...
-            df_all(Prob.user.df,xu(1:n*(N+1)),J,n,N);
+% conJ(1:n*(N+1),1:n*(N+1)) = (2/Prob.user.Tp)*Prob.user.D - ...
+%             df_all(Prob.user.df,xu(1:n*(N+1)),J,n,N);
+% 
+% conJ(1:n*(N+1), :) = conJ(1:n*(N+1), :)-B_dyn_J(Prob.user.B_Jacob,xu(1:n*(N+1)),xu(n*(N+1)+1:end),J,m,n,N);
+X = xu(1:n*(N+1));
+U = xu(n*(N+1)+1:end);
+conJ(1:n*(N+1), :) = [(2/Prob.user.Tp)*Prob.user.D zeros(n*(N+1),m*(N+1))]-...
+                        df_all(Prob.user.df,X,U,J,n,m,N);
 
-%conJ(1:n*(N+1), :) = -B_dyn_J(Prob.user.B_Jacob,xu(1:n*(N+1)),xu(n*(N+1)+1:end),J,m,n,N);
-conJ(1:n*(N+1), n*(N+1)+1:end) = -B_dyn_J(Prob.user.B_Jacob,xu(1:n*(N+1)),xu(n*(N+1)+1:end),J,m,n,N);
+
+%conJ(1:n*(N+1), n*(N+1)+1:end) = -B_dyn_J(Prob.user.B_Jacob,xu(1:n*(N+1)),xu(n*(N+1)+1:end),J,m,n,N);
 %conJ(1:n*(N+1),n*(N+1)+1:end) = -Prob.user.B_full;
 
 %% Initial RPI constraint
