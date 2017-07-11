@@ -39,7 +39,9 @@ N_mp = 120;
     P,alpha,(0.98*d_bar)^2,...
     x_eq,u_eq,obs,J,Q,R,'MP');
 
-load(filename);
+if exist(filename, 'file') == 2
+    load(filename);
+end
 % mp_warm = struct('Tp',Tp,'shift',0,'sol',0,...
 %                   's_t',MP_st,'state',[],'ctrl',[],'result',[]);
 
