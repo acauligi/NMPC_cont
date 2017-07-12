@@ -1,5 +1,8 @@
 using NLOptControl
 using PyPlot
+using HDF5
+using JLD
+
 pdot  = [:(0.25*(x1[j]^2-x2[j]^2-x3[j]^2+1)*u1[j] +  0.5*(x1[j]*x2[j]-x3[j])*u2[j] + 0.5*(x2[j]-x1[j]*x3[j])*u3[j]); :(0.5*(x1[j]*x2[j]+x3[j])*u1[j] + 0.25*(x2[j]^2 - x1[j]^2-x3[j]^2)*u2[j] + 0.5*(x2[j]*x3[j]-x1[j])*u3[j]); :(0.5*(x1[j]*x3[j]-x2[j])*u1[j] + 0.5*(x1[j]+x2[j]*x3[j])*u2[j] + 0.25*(x3[j]^2-x2[j]^2-x1[j]^2+1)*u3[j])];
 
 # Sim parameters
@@ -28,7 +31,24 @@ configure!(prob;(:Nck=>[N]),(:finalTimeDV=>true));
 #obj=integrate!(prob,prob.r.u[:,1];(:variable=>:control));
 
 @NLobjective(prob.mdl,Min,prob.tf);
+
+d = load("temp.jld");
+X = d["X"]; U = d["U"];
+setvalue(prob.r.x, X);
+setvalue(prob.r.u, U);
+
 @time optimize!(prob)
+
+#traces = zeros(3, N+1);
+#test_vector = [1;0;0];
+#for i = 1:N+1
+#    R = mrp2dcm(prob.r.X[i,:]);
+#    traces[:,i] = R*test_vector;
+#end
+#plot3D(traces[1,:], traces[2,:], traces[3,:], 'w');
+#
+#vi = mrp2dcm(x0)*test_vector;		scatter3D(vi[1], vi[2], vi[3]);
+#vf = mrp2dcm(xf)*test_vector;		scatter3D(vf[1], vf[2], vf[3]);
 
 #using JuMP, Ipopt, PyPlot
 #

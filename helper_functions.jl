@@ -146,3 +146,11 @@ function mrp_derivative(p, w)
 
   return p_dot
 end
+
+
+
+
+function mrp2dcm(p::Array)
+  dcm = eye(3) + (8*skew(p)^2 - 4*(1 - norm(p)^2)*skew(p))/(1+norm(p)^2)^2;
+  return dcm
+end

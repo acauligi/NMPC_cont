@@ -72,8 +72,8 @@ xu_L = [kron(ones(N+1,1),x_L);
 xu_U = [kron(ones(N+1,1),x_U);
         kron(ones(N+1,1),u_U)]; 
        
-MPC_cost = @(xu) (Tp/2)*(xu-xu_eq)'*F*(xu-xu_eq);% + Obs_cost(xu,n,N,obs) ;
-MPC_grad = @(xu) Tp*F*(xu-xu_eq);% + Obs_grad(xu,n,m,N,obs);
+MPC_cost = @(xu) (Tp/2)*(xu-xu_eq)'*F*(xu-xu_eq);% + repmat([zeros(6,1); 1/(N+1); zeros(3,1)], [N+1,1]).*xu;% + Obs_cost(xu,n,N,obs) ;
+MPC_grad = @(xu) Tp*F*(xu-xu_eq);% + repmat([zeros(6,1); 1/(N+1); zeros(3,1)], [N+1 1]);% + Obs_grad(xu,n,m,N,obs);
 MPC_hess = @(xu) Tp*F;
 
 % MP_con_fnc = @(xu,Prob) MP_con(xu,Prob,n,geo_MPC.geo_Prob,N,P,D,f,B_full,Tp,obs);
